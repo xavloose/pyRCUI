@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/style.css">
+
+    <title>GE Detector Testing</title>
+  </head>
+  <body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="">GE Dectector Tester</a>
+    </nav>
+
+    <div class="card">
+      <div class="card-header">Overview</div>
+      <div class="card-body">
+        <ul class="list-unstyled">
+          <li>Detector Type: {{type}}</li>
+          <li>Operating Voltage: {{oVoltage}}</li>
+          <li>Current Voltage: {{aVoltage}}</li>
+          <!--<li>Up Time: 01:03:45</li>-->
+        </ul>
+      </div>
+      <!--<div class="card-footer">v20180328</div>-->
+    </div>
+    <div class="card">
+      <div class="card-header">Detector Monitor</div>
+      <div class="card-body">
+        <ul class="list-unstyled">
+          <li>Manufacturer: {{manufacturer}}</li>
+          <li>Serial Number: {{serial_number}}</li>
+        </ul>
+      </div>
+      <!--<div class="card-footer">Last Updated: Never</div>-->
+    </div><div class="card">
+      <div class="card-header">Voltage Control</div>
+      <img class="card-img-top NO-CACHE" src="/assets/plot.png" alt="Voltage Plot" style="width:850px; align-self:center" id="voltagePlot">
+      <div class="card-body">
+        <ul class="list-unstyled">
+          <li>Target Voltage: {{tVoltage}}</li>
+          <li>Actual Voltage: {{aVoltage}}</li>
+        </ul>
+        <div class="slidecontainer">
+          <input type="range" min="2" max="2620" value={{tVoltage}} class="slider" id="voltage">
+          <div id="target"></div>
+          <button type="button" class="btn btn-dark" onclick="set_voltage()">Set Voltage</button>
+          <button type="button" class="btn btn-dark" onclick="reload()">Refresh</button>
+        </div>
+      </div>
+      <!--<div class="card-footer">Last Updated: Never</div>-->
+    </div>
+
+    <!-- Optional JavaScript -->
+    <script>
+    var slider = document.getElementById("voltage");
+    var output = document.getElementById("target");
+    output.innerHTML = slider.value + " V";
+    var nods = document.getElementsByClassName('NO-CACHE');
+    for (var i = 0; i < nods.length; i++)
+    {
+      nods[i].attributes['src'].value += "?a=" + Math.random();
+    }
+
+    slider.oninput = function() {
+      output.innerHTML = this.value + " V";
+    }
+
+    function reload() {location.reload(true);}
+
+    function set_voltage() {
+      fetch("http://"+window.location.hostname+"/setvoltage", {
+        body: JSON.stringify({setVoltage: output.innerHTML.split(' ')[0]}),
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'POST'
+      }).then(response => location.reload(true));
+      return false;
+    }
+    </script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/assets/js/jquery-3.2.1.slim.min.js"></script>
+    <script src="/assets/js/popper.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+  </body>
+</html>
